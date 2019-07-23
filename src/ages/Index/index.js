@@ -4,19 +4,23 @@ import axios from 'axios'
 
 import './index.scss'
 
+import { getCityListData } from '../../utils/index'
+
 import nav1 from '../../assets/images/nav-1.png'
 import nav2 from '../../assets/images/nav-2.png'
 import nav3 from '../../assets/images/nav-3.png'
 import nav4 from '../../assets/images/nav-4.png'
 
 navigator.geolocation.getCurrentPosition(position => {
-  console.log(position)
-  console.log(position.coords.longitude)
-  console.log(position.coords.latitude)
+  // console.log(position)
+  // console.log(position.coords.longitude)
+  // console.log(position.coords.latitude)
 })
 
 export default class Index extends React.Component {
   state = {
+    // 定位位置
+    curCity: '上海',
     // 最新资讯
     news: [],
     //group数据
@@ -144,13 +148,18 @@ export default class Index extends React.Component {
 
 
 
-  componentDidMount() {
+  async componentDidMount() {
     //获取swiper数据请求方法调用
     this.getSwipers()
     //获取group数据请求方法调用
     this.getGroups()
     //获取news数据请求方法调用
     this.getNews()
+    //获取当前城市方法调用
+    const { label } = await getCityListData()
+    this.setState({
+      curCity: label
+    })
   }
 
   render() {
@@ -162,7 +171,7 @@ export default class Index extends React.Component {
           <Flex className='search'>
             <Flex className='search-left'>
               <div className='location' onClick={() => this.props.history.push('/citylist')}>
-                <span>上海</span>
+                <span>{this.state.curCity}</span>
                 <i className='iconfont icon-arrow'></i>
               </div>
               <div className='search-form' onClick={() => this.props.history.push('/search')}>
