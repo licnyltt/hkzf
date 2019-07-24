@@ -1,41 +1,21 @@
 import React from 'react'
 
-import { List } from 'react-virtualized';
+import { List, AutoSizer } from 'react-virtualized';
 
 import axios from 'axios'
 
-import { NavBar } from 'antd-mobile';
+import { NavBar, Toast } from 'antd-mobile';
 
-import { getCityListData } from '../../utils/index'
+import { getCityListData, setCity } from '../../utils/index'
 
 import './index.scss'
 
-
-// List data as an array of strings
-// const list = [
-//   'Brian Vaughn'
-//   // And so on...
-// ];
-
-// const list = Array.from(new Array(10000).map((item, index) => `${index}------dsadad`))
-const list = Array.from(new Array(10000)).map((item, index) => `${index}-----asdasd`)
-
-function rowRenderer({
-  key,         // Unique key within array of rows
-  index,       // Index of row within collection
-  isScrolling, // The List is currently being scrolled
-  isVisible,   // This row is visible within the List (eg it is not an overscanned row)
-  style        // Style object to be applied to row (to position it)
-}) {
-  return (
-    <div
-      key={key}
-      style={style}
-    >
-      {list[index]}-------{isScrolling + ""}-------{isVisible + ""}
-    </div>
-  )
-}
+//索引标题高度
+const TITLE_HEIGHT = 36
+//城市名字高度
+const NAME_HEIGHT = 50
+// 有房源的城市
+const HOUSE_CITY = ['北京', '上海', '广州', '深圳']
 
 const formatCityList = list => {
   const cityList = {}
@@ -52,16 +32,31 @@ const formatCityList = list => {
   // console.log(cityIndex)
   return {
     cityList,
-    cityIndex
+    cityIndex,
   }
 }
+
+const formatCityIndex = letter => {
+  switch (letter) {
+    case '#':
+      return '当前定位';
+    case 'hot':
+      return '热门城市';
+    default:
+      return letter.toUpperCase()
+  }
+}
+
 
 export default class CityList extends React.Component {
 
   state = {
     cityList: {},
-    cityIndex: []
+    cityIndex: [],
+    active: 0,
   }
+
+  cityListComponent = React.createRef()
 
   getCityList = async () => {
 
@@ -83,12 +78,14 @@ export default class CityList extends React.Component {
 
     //使用promise解决回调问题
     const curCity = await getCityListData()
+    // console.log(curCity)
+
     cityIndex.unshift('#')
     cityList['#'] = [curCity]
     // console.log(cityList, cityIndex)
     this.setState({
       cityList,
-      cityIndex
+      cityIndex,
     })
 
     // // 使用回调函数的形式
@@ -117,8 +114,90 @@ export default class CityList extends React.Component {
     // })
   }
 
-  componentDidMount() {
-    this.getCityList()
+  async componentDidMount() {
+    await this.getCityList()
+    // console.log(this.cityListComponent)
+    this.cityListComponent.current.measureAllRows()
+  }
+
+  rowRenderer = ({
+    index,       // Index of row
+    isScrolling, // The List is currently being scrolled
+    isVisible,   // This row is visible within the List (eg it is not an overscanned row)
+    key,         // Unique key within array of rendered rows
+    parent,      // Reference to the parent List (instance)
+    style        // Style object to be applied to row (to position it);
+    // This must be passed through to the rendered row element.
+  }) => {
+    const { cityIndex, cityList } = this.state
+    const letter = cityIndex[index]
+    // 获取指定字母索引下的城市列表数据
+    // console.log(cityList[letter])
+    return (
+      <div
+        key={key}
+        style={style}
+        className='city'
+      >
+        <div className='title'>{formatCityIndex(letter)}</div>
+        {cityList[letter].map((item, index) => (
+          <div
+            className='name'
+            key={item.value}
+            onClick={() => {
+              this.changeCity(item)
+            }}
+          >
+            {item.label}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+
+  changeCity = ({ label, value }) => {
+    console.log(label, value)
+    if (HOUSE_CITY.indexOf(label) === -1) {
+      Toast.info('该城市暂无房源数据', 1, null, false);
+    } else {
+      setCity({ label, value })
+      this.props.history.go(-1)
+    }
+  }
+
+  // 获取每一行高度方法
+  getRowHeight = ({ index }) => {
+    const { cityList, cityIndex } = this.state
+    return TITLE_HEIGHT + cityList[cityIndex[index]].length * NAME_HEIGHT
+  }
+
+  // 渲染右侧索引列表方法
+  renderCityIndex = () => {
+    const { cityIndex, active } = this.state
+    return cityIndex.map((item, index) => (
+      <li
+        key={item}
+        className="city-index-item"
+        onClick={() => {
+          this.cityListComponent.current.scrollToRow(index)
+        }
+        }
+      >
+        <span
+          className={active === index ? 'index-active' : 0}
+        >
+          {item === 'hot' ? '热' : item}
+        </span>
+      </li >
+    ))
+  }
+  // 获取list组件中渲染行的信息
+  onRowsRendered = ({ startIndex }) => {
+    // console.log(startIndex)
+    this.setState({
+      active: startIndex
+    })
   }
 
   render() {
@@ -128,16 +207,25 @@ export default class CityList extends React.Component {
           className='navbar'
           mode="light"
           icon={<i className='iconfont icon-back' />}
-          onLeftClick={() => console.log('onLeftClick')}
+          onLeftClick={() => this.props.history.go(-1)}
         >城市选择</NavBar>
-
-        <List
-          width={300}
-          height={300}
-          rowCount={list.length}
-          rowHeight={20}
-          rowRenderer={rowRenderer}
-        />
+        {/* 城市列表 */}
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              ref={this.cityListComponent}
+              height={height}
+              rowCount={this.state.cityIndex.length}
+              rowHeight={this.getRowHeight}
+              rowRenderer={this.rowRenderer}
+              width={width}
+              onRowsRendered={this.onRowsRendered}
+              scrollToAlignment='start'
+            />
+          )}
+        </AutoSizer>
+        {/* 右侧索引列表 */}
+        <ul className='city-index'>{this.renderCityIndex()}</ul>
       </div>
     )
   }

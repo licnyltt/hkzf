@@ -5,13 +5,14 @@ import { getCity, setCity } from './city'
 
 //使用promise解决回调问题
 const getCityListData = () => {
+  // debugger
   const curCity = getCity()
   if (!curCity) {
     return new Promise((resolve, reject) => {
       try {
         const myCity = new window.BMap.LocalCity();
         myCity.get(async result => {
-          // console.log(result.name)
+          console.log('百度api根据ip定位当前城市', result)
           const { data: { body: { label, value } } } = await axios({
             method: 'get',
             url: 'http://localhost:8080/area/info',
@@ -50,4 +51,4 @@ const getCityListData = () => {
 //   }
 // }
 
-export { getCityListData }
+export { getCityListData, getCity, setCity }
