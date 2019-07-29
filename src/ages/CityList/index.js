@@ -4,9 +4,11 @@ import { List, AutoSizer } from 'react-virtualized';
 
 import axios from 'axios'
 
-import { NavBar, Toast } from 'antd-mobile';
+import { Toast } from 'antd-mobile';
 
 import { getCityListData, setCity } from '../../utils/index'
+
+import NavBarCom from '../../components/NavBar'
 
 import './index.scss'
 
@@ -203,12 +205,9 @@ export default class CityList extends React.Component {
   render() {
     return (
       <div className='citylist'>
-        <NavBar
-          className='navbar'
-          mode="light"
-          icon={<i className='iconfont icon-back' />}
-          onLeftClick={() => this.props.history.go(-1)}
-        >城市选择</NavBar>
+        <NavBarCom>
+          城市选择
+        </NavBarCom>
         {/* 城市列表 */}
         <AutoSizer>
           {({ height, width }) => (

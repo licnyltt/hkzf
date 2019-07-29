@@ -2,6 +2,8 @@ import React from 'react'
 import { Carousel, Flex, Grid, WingBlank } from 'antd-mobile';
 import axios from 'axios'
 
+import SearchHeader from '../../components/SearchHeader/'
+
 import './index.scss'
 
 import { getCityListData } from '../../utils/index'
@@ -167,6 +169,9 @@ export default class Index extends React.Component {
       <div id='index'>
         {/* swiper部分 */}
         <div className='swiper'>
+
+          <SearchHeader curCity={this.state.curCity}></SearchHeader>
+
           {/* 顶部导航部分 */}
           <Flex className='search'>
             <Flex className='search-left'>
@@ -181,6 +186,8 @@ export default class Index extends React.Component {
             </Flex>
             <i className='iconfont icon-map' onClick={() => this.props.history.push('/map')} ></i>
           </Flex>
+
+
           {/* 轮播图部分 */}
           {!this.state.isSwiperLoading && <Carousel className='swiper'
             autoplay={true}

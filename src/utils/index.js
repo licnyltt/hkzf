@@ -16,7 +16,7 @@ const getCityListData = () => {
           const { data: { body: { label, value } } } = await axios({
             method: 'get',
             url: 'http://localhost:8080/area/info',
-            data: {
+            params: {
               name: result.name
             }
           });
@@ -52,3 +52,6 @@ const getCityListData = () => {
 // }
 
 export { getCityListData, getCity, setCity }
+export { BASE_URL } from './url'
+export { API } from './api'
+
