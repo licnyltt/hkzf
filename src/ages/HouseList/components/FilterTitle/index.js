@@ -19,11 +19,17 @@ export default function FilterTitle({ HighLight, titleSelectedStatus }) {
       {
         titleList.map(item => (
           <Flex.Item key={item.type} onClick={() => HighLight(item.type)}>
+
             {/* 选中类名： selected */}
+
             <span className={[styles.dropdown, titleSelectedStatus[item.type] ? styles.selected : ''].join(' ')}>
+
               {/* <span className={[styles.dropdown,].join(' ')}> */}
+
               <span>{item.title}</span>
+
               <i className="iconfont icon-arrow" />
+
             </span>
           </Flex.Item>
         ))

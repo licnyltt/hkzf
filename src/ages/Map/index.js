@@ -2,11 +2,11 @@ import React from 'react'
 
 import { Toast } from 'antd-mobile';
 
-import axios from 'axios'
-
 import classNames from 'classnames'
 
 import { getCityListData, BASE_URL, API } from '../../utils'
+
+import HouseItem from '../../components/HouseItem'
 
 import NavBarPublic from '../../components/NavBar'
 
@@ -73,9 +73,8 @@ export default class Map extends React.Component {
 
   async renderOverlays(id) {
     Toast.loading('loading...', 0, null, false)
-    let res = await axios({
-      method: 'get',
-      url: `${API}/area/map`,
+    let res = await API({
+      url: `${BASE_URL}/area/map`,
       params: {
         id
       }
@@ -223,9 +222,8 @@ export default class Map extends React.Component {
 
   async getCommunityHouses(id) {
     Toast.loading('loading...', 0, null, false)
-    let res = await axios({
-      method: 'get',
-      url: `${API}/houses`,
+    let res = await API({
+      url: `${BASE_URL}/houses`,
       params: {
         id
       }
@@ -241,44 +239,14 @@ export default class Map extends React.Component {
 
   renderHouseList() {
     return this.state.houseList.map(item => (
-      <div className={styles.house} key={item.houseCode}>
-
-
-        <div className={styles.imgWrap}>
-          <img
-            className={styles.img}
-            src={`${BASE_URL}${item.houseImg}`}
-            alt=""
-          />
-        </div>
-        <div className={styles.content}>
-          <h3 className={styles.title}>{item.title}</h3>
-          <div className={styles.desc}>{item.desc}</div>
-          <div>
-
-
-            {item.tags.map((tag, index) => {
-              const tagClass = `tag${index > 2 ? '3' : index + 1}` // tag1 or tag2 or tag3
-              return (
-                <span
-                  key={tag}
-                  className={[styles.tag, styles[tagClass]].join(' ')}
-                >
-                  {tag}
-                </span>
-              )
-            })}
-
-
-          </div>
-          <div className={styles.price}>
-            <span className={styles.priceNum}>{item.price}</span> 元/月
-          </div>
-        </div>
-
-
-
-      </div>
+      <HouseItem
+        key={item.houseCode}
+        {...item}
+        houseImg={`${BASE_URL}${item.houseImg}`}
+        onClick={() => { this.props.history.push(`/details/${item.houseCode}`) }}
+      //测试
+      // style={...}
+      ></HouseItem>
     ))
   }
 
