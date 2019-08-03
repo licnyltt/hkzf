@@ -20,6 +20,8 @@ const NAME_HEIGHT = 50
 const HOUSE_CITY = ['北京', '上海', '广州', '深圳']
 
 const formatCityList = list => {
+  // 把数据存在对象中
+  // { a: [{}, {}]; b: [{}, {}] }
   const cityList = {}
   list.forEach(item => {
     const firstLetter = item.short.substr(0, 1)
@@ -29,7 +31,7 @@ const formatCityList = list => {
       cityList[firstLetter] = [item]
     }
   });
-
+  // 把城市首字母从a-Z排序放到一个数组中
   const cityIndex = Object.keys(cityList).sort()
   // console.log(cityIndex)
   return {

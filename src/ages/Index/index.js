@@ -118,12 +118,13 @@ export default class Index extends React.Component {
 
   //nav行渲染方法封装
   renderNavs = () => {
-    return this.state.navItems.map(item => (
-      <Flex.Item key={item.imgSrc} onClick={() => this.props.history.push(item.path)}>
+    return this.state.navItems.map(item => {
+      // console.log(item)
+      return <Flex.Item key={item.imgSrc} onClick={() => this.props.history.push(item.path)}>
         <img src={item.imgSrc} alt="" />
         <p>{item.title}</p>
       </Flex.Item>
-    ))
+    })
   }
 
   //swiper渲染方法封装

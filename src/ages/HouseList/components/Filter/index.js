@@ -1,5 +1,8 @@
 import React from 'react'
 
+// 引入动画组件库
+import { Spring } from 'react-spring/renderprops'
+
 import FilterTitle from '../FilterTitle'
 import FilterPicker from '../FilterPicker'
 import FilterMore from '../FilterMore'
@@ -45,6 +48,8 @@ export default class Filter extends React.Component {
   componentDidMount() {
     // 获取所有筛选条件数据
     this.getFiltersData()
+
+    this.htmlBody = document.body
   }
 
   // 获取所有筛选条件数据方法封装
@@ -106,41 +111,12 @@ export default class Filter extends React.Component {
     return null
   }
 
-
-
-  // // 切换标题高亮
-  // // 参数 type 表示：当前点击菜单的类型
-  // changeTitleSelected = type => {
-  //   // console.log(type)
-  //   const { titleSelectedStatus, selectedValues } = this.state
-  //   const newTitleSelectedStatus = { ...titleSelectedStatus }
-  //   Object.keys(titleSelectedStatus).forEach(key => {
-  //     const selectedValue = selectedValues
-  //     if (type === key) {
-  //       newTitleSelectedStatus[type] = true
-  //     } else {
-  //       const curTypeSelected = this.getTitleSelectedStatus(key, selectedValue)
-  //       Object.assign(newTitleSelectedStatus, curTypeSelected)
-  //     }
-  //   })
-
-  //   this.setState({
-  //     titleSelectedStatus: newTitleSelectedStatus,
-  //     openType: type
-  //   })
-
-  //   // this.setState({
-  //   //   titleSelectedStatus: { ...this.state.titleSelectedStatus, [type]: true },
-  //   //   openType: type
-  //   // })
-
-  // }
-
-
-
   // 切换标题高亮
   // 参数 type 表示：当前点击菜单的类型
   changeTitleSelected = type => {
+
+    this.htmlBody.className = 'hidden'
+
     // debugger
     // 1 在标题点击事件 onTitleClick 方法中，获取到两个状态：标题选中状态对象和筛选条件的选中值对象。
     // titleSelectedStatus => { area: false, mode: true, ... }
@@ -198,31 +174,6 @@ export default class Filter extends React.Component {
   getTitleSelectedStatus(type, selectedVal) {
     const newTitleSelectedStatus = {}
 
-    // if (
-    //   type === 'area' &&
-    //   (selectedVal.length === 3 || selectedVal[0] === 'subway')
-    // ) {
-    //   // 选中
-    //   newTitleSelectedStatus[type] = true
-    // } else if (type === 'mode' && selectedVal[0] !== 'null') {
-    //   // 选中
-    //   newTitleSelectedStatus[type] = true
-    // } else if (type === 'price' && selectedVal[0] !== 'null') {
-    //   // 选中
-    //   newTitleSelectedStatus[type] = true
-    // } else if (type === 'more') {
-    // } else {
-    //   // 不选中
-    //   newTitleSelectedStatus[type] = false
-    // }
-
-    // const selectedValues = {
-    //   area: ['area', 'null'],
-    //   mode: ['null'],
-    //   price: ['null'],
-    //   more: []
-    // }
-
     if (type === 'area' && (selectedVal.length === 3 || selectedVal[0] === "subway")) {
       newTitleSelectedStatus[type] = true
     } else if (type === 'mode' && selectedVal[0] !== 'null') {
@@ -239,7 +190,7 @@ export default class Filter extends React.Component {
 
 
   onCancel = (type) => {
-
+    this.htmlBody.className = ''
     const selectedVal = this.state.selectedValues[type]
 
     const newTitleSelectedStatus = this.getTitleSelectedStatus(
@@ -255,7 +206,7 @@ export default class Filter extends React.Component {
 
 
   onSave = (type, value) => {
-
+    this.htmlBody.className = ''
     let newTitleSelectedStatus = this.getTitleSelectedStatus(
       type,
       value
@@ -282,7 +233,7 @@ export default class Filter extends React.Component {
     filters.price = newSelectedValues.price[0]
     // 处理更多筛选条件数据
     filters.more = newSelectedValues.more.join(',')
-    console.log(1111111, filters)
+    // console.log(1111111, filters)
     // 调用父组件中的 onFilter 方法，将所有筛选条件数据传递给父组件
     this.props.onFilter(filters)
 
@@ -320,43 +271,54 @@ export default class Filter extends React.Component {
     />
   }
 
+  renderMask() {
+    const { openType } = this.state
+    const isHide = openType == 'more' || openType == ''
+
+    return (
+      <Spring
+        from={{ opacity: 0 }}
+        to={{ opacity: isHide ? 0 : 1 }}
+      >
+        {props => {
+          // console.log(props)
+          if (props.opacity == 0) {
+            return null
+          }
+          return (
+            <div style={props} className={styles.mask} onClick={() => { this.onCancel(openType) }} />
+          )
+
+        }}
+      </Spring>
+    )
+
+  }
+
   render() {
     return (
       <div className={styles.root}>
 
         {/* 前三个菜单的遮罩层 */}
-        {/* <div className={styles.mask} /> */}
-
         {
-          (this.state.openType === 'area' || this.state.openType === 'mode' || this.state.openType === 'price') ? <div className={styles.mask} onClick={this.onCancel} /> : null
+          this.renderMask()
         }
 
-
-
         <div className={styles.content}>
-
           {/* 标题栏 */}
           <FilterTitle
             HighLight={this.changeTitleSelected}
             titleSelectedStatus={this.state.titleSelectedStatus}
           />
-
           {/* 前三个菜单对应的内容： */}
-
           {
-            // this.state.openType === 'area' || this.state.openType === 'mode' || this.state.openType === 'price' ? <FilterPicker onCancel={this.onCancel} onSave={this.onSave} /> : null
             this.renderFilterPicker()
           }
-
-
           {/* 最后一个菜单对应的内容： */}
           {/* <FilterMore /> */}
-
           {
-
             this.renderFilterMore()
           }
-
         </div>
 
       </div>

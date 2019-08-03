@@ -34,5 +34,17 @@
 
 .loading {
   height: 110px;
-  background-color: #ccc;
+  background-color: #f5f6f6;
+}
+
+.HouseList {
+  position: absolute;
+  top: 85px;
+  width: 100%;
+}
+
+:global {
+  .ReactVirtualized__Grid__innerScrollContainer {
+    margin-bottom: 50px;
+  }
 }

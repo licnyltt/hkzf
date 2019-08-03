@@ -11,13 +11,18 @@ import styles from './index.module.scss'
 
 // console.log(styles)
 
-function NavBarCom({ children, history }) {
+function NavBarCom({ children, history, className, rightContent }) {
   return (
     <NavBar
-      id={styles.navBar}
+      className={[styles.navBar, className].join(' ')}
       mode="light"
       icon={<i className='iconfont icon-back' />}
-      onLeftClick={() => history.go(-1)}
+      onLeftClick={() => {
+        console.log(111)
+
+        history.go(-1)
+      }}
+      rightContent={rightContent}
     >
       {children}
     </NavBar>
@@ -25,7 +30,8 @@ function NavBarCom({ children, history }) {
 }
 
 NavBarCom.prototypes = {
-  children: PropTypes.string.isRequired
+  children: PropTypes.string.isRequired,
+  id: PropTypes.string
 }
 
 export default withRouter(NavBarCom)
