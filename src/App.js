@@ -5,6 +5,16 @@ import Home from './ages/Home'
 import Map from './ages/Map'
 import CityList from './ages/CityList'
 import Details from './ages/Details'
+import Login from './ages/Login'
+
+import AuthRoute from './components/AuthRoute'
+
+import Rent from './ages/Rent'
+import RentAdd from './ages/Rent/Add'
+import RentSearch from './ages/Rent/Search'
+
+
+
 export default class App extends React.Component {
   render() {
     return (
@@ -17,6 +27,12 @@ export default class App extends React.Component {
           <Route path="/map" component={Map}></Route>
           <Route path="/citylist" component={CityList}></Route>
           <Route path='/details/:id' component={Details}></Route>
+          <Route path="/login" component={Login}></Route>
+
+          <AuthRoute exact path="/rent" component={Rent}></AuthRoute>
+          <AuthRoute path="/rent/add" component={RentAdd}></AuthRoute>
+          <AuthRoute path="/rent/search" component={RentSearch}></AuthRoute>
+
         </div>
       </Router>
     )

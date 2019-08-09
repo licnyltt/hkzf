@@ -50,6 +50,13 @@
 
 .slides {
   height: 252px;
+
+  //限制高度，添加跟slides一样的高度
+  :global {
+    img {
+      height: 252px;
+    }
+  }
 }
 
 .navHeader {

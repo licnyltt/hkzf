@@ -54,4 +54,5 @@ const getCityListData = () => {
 export { getCityListData, getCity, setCity }
 export { BASE_URL } from './url'
 export { API } from './api'
+export { setToken, getToken, removeToken, isAuth } from './token'
 
