@@ -23,10 +23,24 @@ export default class Index extends React.Component {
   state = {
     // 定位位置
     curCity: '上海',
+
+    // 轮播图图片数据
+    swipers: [],
+
     // 最新资讯
     news: [],
-    //group数据
+
+    // 租房小组数据
     groups: [],
+
+
+    // 设置图片高度
+    imgHeight: 212,
+
+    // 表示轮播图是否加载中
+    isSwiperLoading: true,
+
+
     //nav数据
     navItems: [
       {
@@ -85,11 +99,11 @@ export default class Index extends React.Component {
   getSwipers = async () => {
     const res = await axios({
       method: 'get',
-      url: '/api/home/swiper',
+      url: 'http://localhost:8080/home/swiper',
     });
-    // console.log(res)
+    console.log(res)
     this.setState({
-      data: res.data.body,
+      swipers: res.data.body,
       isSwiperLoading: false
     })
   }
@@ -129,7 +143,7 @@ export default class Index extends React.Component {
 
   //swiper渲染方法封装
   renderSwipers = () => {
-    return this.state.data.map(val => (
+    return this.state.swipers.map(val => (
       <a
         key={val.id}
         href="http://www.alipay.com"
@@ -151,9 +165,10 @@ export default class Index extends React.Component {
 
 
 
+
   async componentDidMount() {
     //获取swiper数据请求方法调用
-    this.getSwipers()
+    await this.getSwipers()
     //获取group数据请求方法调用
     this.getGroups()
     //获取news数据请求方法调用
