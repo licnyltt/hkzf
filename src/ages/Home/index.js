@@ -1,11 +1,20 @@
-import React from 'react'
+
+import React, { lazy } from 'react';
 import { Route } from "react-router-dom"
 import Index from '../Index'
-import Profile from '../Profile'
-import HouseList from '../HouseList'
-import News from '../News'
 import { TabBar } from 'antd-mobile';
 import './index.scss'
+
+// import Profile from '../Profile'
+// import HouseList from '../HouseList'
+// import News from '../News'
+
+const HouseList = lazy(() => import('../HouseList'))
+const News = lazy(() => import('../News'))
+const Profile = lazy(() => import('../Profile'))
+
+
+
 // const tabItems = [
 //   {
 //     title: '首页',

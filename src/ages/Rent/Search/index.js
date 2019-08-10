@@ -6,6 +6,8 @@ import { getCity, API } from '../../../utils'
 
 import styles from './index.module.css'
 
+import _ from 'lodash'
+
 export default class Search extends Component {
   // 当前城市id
   cityId = getCity().value
@@ -42,6 +44,31 @@ export default class Search extends Component {
     })
   }
 
+  // 初始化timerId
+  timerId = null
+
+  // 传递给 search 的参数，最终，会传递给 debounce 回调函数中的第一个参数
+  search = _.debounce(async val => {
+    console.log('debounce', val)
+    // 发送请求获取小区数据
+    const res = await API.get('/area/community', {
+      params: {
+        name: val,
+        id: this.cityId
+      }
+    })
+
+    const { body } = res.data
+
+    // console.log('小区列表：', res)
+    this.setState({
+      tipsList: body.map(item => ({
+        community: item.community,
+        communityName: item.communityName
+      }))
+    })
+  }, 500)
+
 
   // 根据关键词搜索小区信息
   handleSearchTxt = val => {
@@ -57,27 +84,28 @@ export default class Search extends Component {
       searchTxt: val
     })
 
-    // this.search(val)
+    this.search(val)
 
-    clearTimeout(this.timerId)
-    this.timerId = setTimeout(async () => {
-      // 发送请求获取小区数据
-      const res = await API.get('/area/community', {
-        params: {
-          name: val,
-          id: this.cityId
-        }
-      })
-      // console.log('小区列表：', res)
+    // clearTimeout(this.timerId)
+    // this.timerId = setTimeout(async () => {
+    //   // 发送请求获取小区数据
+    //   const res = await API.get('/area/community', {
+    //     params: {
+    //       name: val,
+    //       id: this.cityId
+    //     }
+    //   })
+    //   // console.log('小区列表：', res)
 
-      const { body } = res.data
-      this.setState({
-        tipsList: body.map(item => ({
-          community: item.community,
-          communityName: item.communityName
-        }))
-      })
-    }, 500)
+    //   const { body } = res.data
+    //   this.setState({
+    //     tipsList: body.map(item => ({
+    //       community: item.community,
+    //       communityName: item.communityName
+    //     }))
+    //   })
+    // }, 500)
+
   }
 
   render() {

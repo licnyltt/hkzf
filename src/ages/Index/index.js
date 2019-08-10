@@ -85,7 +85,7 @@ export default class Index extends React.Component {
   getSwipers = async () => {
     const res = await axios({
       method: 'get',
-      url: 'http://localhost:8080/home/swiper',
+      url: '/api/home/swiper',
     });
     // console.log(res)
     this.setState({
